@@ -1,0 +1,26 @@
+@startuml c4-dinamico-aprovacao
+!include <C4/C4_Dynamic>
+LAYOUT_LEFT_RIGHT()
+
+title C4 Dinâmico – Aprovar plano de voo (tudo ou nada)
+
+System_Ext(cliente, "Aplicação cliente HTTP")
+ContainerDb(bd, "Banco de dados", "H2")
+
+Container_Boundary(api, "API de Planos de Voo") {
+  Component(ctrlPlano, "PlanoDeVooController", "@RestController")
+  Component(ucAprovar, "AprovarPlanoUseCase", "@Transactional")
+  Component(svValid, "ServicoValidacaoPlano", "Serviço de domínio")
+  Component(svRes, "ServicoReservas", "Serviço de domínio")
+  Component(jpa, "PlanoDeVooJpaAdapter / ReservaJpaAdapter", "Spring Data JPA")
+}
+
+Rel(cliente, ctrlPlano, "POST /api/planos/{id}/aprovacao", "HTTP/JSON")
+Rel(ctrlPlano, ucAprovar, "aprovar(id)")
+Rel(ucAprovar, jpa, "carrega plano EM_EDICAO e reservas do período")
+Rel(ucAprovar, svValid, "revalida no instante atual")
+Rel(ucAprovar, svRes, "gera uma reserva por slot de altitude e de vaga")
+Rel(ucAprovar, jpa, "grava reservas (flush) e situação APROVADO")
+Rel(jpa, bd, "INSERT reservas (UNIQUE recurso+slot) e UPDATE plano", "JDBC")
+Rel(ucAprovar, ctrlPlano, "commit → 200; inválido → 422; conflito → 409 e rollback (plano segue EM_EDICAO)")
+@enduml

@@ -1,0 +1,206 @@
+@startuml diagrama-dominio
+title Sistema de Planos de Voo: Modelo de Domínio
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam class {
+  BackgroundColor white
+  BorderColor #3B6B5A
+  ArrowColor #2F5D50
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9E9E
+}
+
+package "aeronave" {
+  abstract class Aeronave {
+    -prefixo: String
+    -velocidadeCruzeiroKmH: BigDecimal
+    -autonomiaNominalKm: BigDecimal
+    +{abstract} getCategoria(): CategoriaAeronave
+    +{abstract} permiteOperar(altitude: int, periodo: Periodo): boolean
+    +{abstract} descricaoRestricao(): String
+    +getAutonomiaSeguraKm(): BigDecimal
+    +tempoDeVoo(distanciaKm: BigDecimal): Duration
+  }
+  class AeronaveParticular {
+    -empresaManutencao: String
+    +permiteOperar(...): boolean
+  }
+  abstract class AeronaveComercial {
+    -companhiaAerea: String
+  }
+  class AeronavePassageiros {
+    -capacidadeMaximaPassageiros: int
+    +permiteOperar(...): boolean
+  }
+  class AeronaveCarga {
+    -capacidadeMaximaToneladas: BigDecimal
+    +permiteOperar(...): boolean
+  }
+  enum CategoriaAeronave {
+    PARTICULAR
+    COMERCIAL_PASSAGEIROS
+    COMERCIAL_CARGA
+  }
+}
+
+package "rede" {
+  class Aeroporto {
+    -codigo: String
+    -nome: String
+    -vagas: int
+    +possuiVaga(numero: int): boolean
+  }
+  class Aerovia {
+    -id: String
+    -distanciaKm: BigDecimal
+    +duracaoPara(aeronave: Aeronave): Duration
+    +{static} altitudeNaFaixa(altitude: int): boolean
+    +{static} altitudesPrevistas(): List<Integer>
+  }
+}
+
+package "piloto" {
+  class Piloto {
+    -id: Long
+    -nome: String
+  }
+}
+
+package "plano" {
+  class PlanoDeVoo <<raiz do agregado>> {
+    -id: Long
+    -partidaPrevista: LocalDateTime
+    -situacao: SituacaoPlano
+    +{static} criar(piloto, aeronave, origem, destino, partida): PlanoDeVoo
+    +alterarDados(piloto, aeronave, origem, destino, partida): void
+    +definirPercurso(trechos: List<Trecho>): void
+    +aprovar(): void
+    +abandonar(): void
+    +cancelar(agora: LocalDateTime): void
+    +garantirEmEdicao(operacao: String): void
+    +getChegadaFinal(): Optional<LocalDateTime>
+  }
+  class Trecho {
+    -altitude: int
+    -entradaPrevista: LocalDateTime
+    -chegadaPrevista: LocalDateTime
+    -tipoPassagem: TipoPassagem
+    -permanenciaMinutos: Integer
+    -vagaPretendida: Integer
+    +{static} criar(aerovia, altitude, entrada, tipo, permanencia, vaga, aeronave): Trecho
+    +periodoNaAerovia(): Periodo
+    +periodoEmSolo(): Optional<Periodo>
+    +liberacaoParaProximoTrecho(): LocalDateTime
+  }
+  enum SituacaoPlano {
+    EM_EDICAO
+    APROVADO
+    CANCELADO
+    ABANDONADO
+  }
+  enum TipoPassagem {
+    SOBREVOO
+    POUSO
+  }
+  class ResultadoValidacao {
+    -erros: List<String>
+    +isValido(): boolean
+    +adicionarErro(erro: String): void
+  }
+}
+
+package "reserva" {
+  class Reserva {
+    -id: Long
+    -planoId: Long
+    -tipo: TipoReserva
+    -aeroviaId: String
+    -altitude: Integer
+    -aeroportoCodigo: String
+    -vaga: Integer
+    +{static} deAltitude(planoId, aeroviaId, altitude, slot): Reserva
+    +{static} deVaga(planoId, aeroportoCodigo, vaga, slot): Reserva
+    +conflitaCom(outra: Reserva): boolean
+  }
+  enum TipoReserva {
+    ALTITUDE_AEROVIA
+    VAGA_AEROPORTO
+  }
+}
+
+package "tempo" {
+  class Periodo <<Value Object>> {
+    -inicio: LocalDateTime
+    -fim: LocalDateTime
+    +slots(): List<Slot>
+  }
+  class Slot <<Value Object>> {
+    -inicio: LocalDateTime
+    +fim(): LocalDateTime
+  }
+}
+
+package "service" {
+  class ServicoValidacaoPlano <<Serviço>> {
+    +validar(plano: PlanoDeVoo, reservasExistentes: Collection<Reserva>): ResultadoValidacao
+  }
+  class ServicoAutonomia <<Serviço>> {
+    +verificar(plano: PlanoDeVoo): List<String>
+  }
+  class ServicoDisponibilidade <<Serviço>> {
+    +conflitos(pretendidas, existentes): List<Reserva>
+    +altitudesLivres(aerovia, periodo, aeronave, existentes): List<Integer>
+    +vagasLivres(aeroporto, periodo, existentes): List<Integer>
+  }
+  class ServicoReservas <<Serviço>> {
+    +reservasNecessarias(plano: PlanoDeVoo): List<Reserva>
+  }
+}
+
+Aeronave <|-- AeronaveParticular
+Aeronave <|-- AeronaveComercial
+AeronaveComercial <|-- AeronavePassageiros
+AeronaveComercial <|-- AeronaveCarga
+Aeronave ..> CategoriaAeronave : categoria >
+
+Aerovia --> "1" Aeroporto : origem >
+Aerovia --> "1" Aeroporto : destino >
+
+PlanoDeVoo --> "1" Piloto
+PlanoDeVoo --> "1" Aeronave
+PlanoDeVoo --> "1" Aeroporto : origem >
+PlanoDeVoo --> "1" Aeroporto : destino >
+PlanoDeVoo --> "1" SituacaoPlano
+PlanoDeVoo "1" *-- "0..*" Trecho : percurso (ordenado) >
+Trecho --> "1" Aerovia : percorre >
+Trecho --> "1" TipoPassagem
+Trecho ..> Periodo : produz >
+
+Reserva --> "1" TipoReserva
+Reserva --> "1" Slot
+Periodo ..> Slot : divide em >
+Reserva ..> PlanoDeVoo : planoId >
+
+ServicoValidacaoPlano --> ServicoAutonomia
+ServicoValidacaoPlano --> ServicoDisponibilidade
+ServicoValidacaoPlano --> ServicoReservas
+ServicoValidacaoPlano ..> ResultadoValidacao : produz >
+ServicoValidacaoPlano ..> PlanoDeVoo : valida >
+ServicoReservas ..> Reserva : cria >
+
+note "<b>Dados pré-carregados</b>\nAeroportos, aerovias, pilotos e aeronaves\nvêm das migrações Flyway (V2, V3).\nO sistema apenas os consulta." as NCarga
+NCarga .. Aeroporto
+NCarga .. Aerovia
+NCarga .. Piloto
+NCarga .. Aeronave
+
+note bottom of Aeronave
+  Nova categoria = nova subclasse com sua
+  regra em permiteOperar(). A validação
+  dos planos não muda (aberto/fechado).
+end note
+@enduml
