@@ -1,0 +1,79 @@
+@startuml c4-3-componentes
+!include <C4/C4_Component>
+LAYOUT_TOP_DOWN()
+
+title C4 Nível 3 – Componentes: API de Planos de Voo (arquitetura hexagonal)
+
+System_Ext(cliente, "Aplicação cliente HTTP", "Postman, curl")
+ContainerDb(bd, "Banco de dados", "H2 (arquivo)", "Rede aérea, frota, planos e reservas")
+
+Container_Boundary(api, "API de Planos de Voo") {
+
+  Boundary(entrada, "adapter.in.rest (adaptadores de entrada)") {
+    Component(ctrlRede, "RedeAereaController, PilotoController, AeronaveController", "@RestController", "GET aeroportos, aerovias, pilotos e aeronaves (UC01–UC04)")
+    Component(ctrlPlano, "PlanoDeVooController", "@RestController", "Criar, editar, percurso, validar, aprovar, abandonar, cancelar, consultar planos e reservas (UC05–UC08, UC11–UC16)")
+    Component(ctrlDisp, "DisponibilidadeController", "@RestController", "Altitudes livres em aerovia e vagas livres em aeroporto por período (UC09, UC10)")
+    Component(erros, "TratadorDeErros", "@RestControllerAdvice", "Exceções → 400/404/409/422 com corpo padronizado")
+  }
+
+  Boundary(aplicacao, "application (portas e casos de uso)") {
+    Component(portasIn, "Portas de entrada", "Interfaces (port.in)", "ConsultarAeroportos, CriarPlano, DefinirPercurso, ValidarPlano, AprovarPlano, CancelarPlano...")
+    Component(ucConsulta, "Consultas de rede e frota", "usecase.cadastro, @Service", "Listam aeroportos, aerovias, pilotos e aeronaves")
+    Component(ucEdicao, "Criar, editar, definir percurso, abandonar", "usecase.plano, @Service", "Alterações só em EM_EDICAO; chegada calculada pelo domínio")
+    Component(ucValidar, "ValidarPlanoUseCase", "@Service", "Valida sem reservar nem mudar a situação")
+    Component(ucAprovar, "AprovarPlanoUseCase", "@Service @Transactional", "Partida futura; revalida; grava todas as reservas; APROVADO. Falha = rollback")
+    Component(ucCancelar, "CancelarPlanoUseCase", "@Service @Transactional", "Só aprovado futuro; libera reservas; CANCELADO")
+    Component(ucConsPlano, "Consultar planos e disponibilidade", "@Service", "Plano por id, por situação, reservas do plano, altitudes e vagas livres")
+    Component(portasOut, "Portas de saída", "Interfaces (port.out)", "Consulta*Port, PlanoDeVooPort, ReservaPort, RelogioPort")
+  }
+
+  Boundary(dominio, "domain (sem Spring nem JPA)") {
+    Component(modelo, "Modelo de domínio", "Entidades e objetos de valor", "PlanoDeVoo (raiz) e Trecho; Aeronave e subclasses por categoria; Aerovia, Aeroporto, Piloto, Reserva, Periodo, Slot")
+    Component(svValid, "ServicoValidacaoPlano", "Serviço de domínio", "Percurso, horários, mesma data, pouso final, categoria, autonomia e disponibilidade")
+    Component(svOutros, "ServicoAutonomia, ServicoDisponibilidade, ServicoReservas", "Serviços de domínio", "85% da autonomia; recursos livres por slot; reservas necessárias")
+  }
+
+  Boundary(saida, "adapter.out (adaptadores de saída)") {
+    Component(jpa, "Adaptadores JPA", "Consulta*JpaAdapter, PlanoDeVooJpaAdapter, ReservaJpaAdapter", "Implementam as portas; entidades JPA e mapeadores separados do domínio")
+    Component(relogio, "RelogioDoSistemaAdapter", "java.time", "Agora em America/Sao_Paulo (fixável por propriedade)")
+    Component(flyway, "Migrações Flyway", "db/migration V1–V4", "Esquema, malha, frota, planos aprovados e reservas da data de referência")
+  }
+
+  Component(config, "ServicosDeDominioConfig", "@Configuration", "Registra os serviços de domínio como beans")
+}
+
+Rel(cliente, ctrlRede, "HTTP/JSON")
+Rel(cliente, ctrlPlano, "HTTP/JSON")
+Rel(cliente, ctrlDisp, "HTTP/JSON")
+
+Rel(ctrlRede, portasIn, "chama")
+Rel(ctrlPlano, portasIn, "chama")
+Rel(ctrlDisp, portasIn, "chama")
+
+Rel(ucConsulta, portasIn, "implementa")
+Rel(ucEdicao, portasIn, "implementa")
+Rel(ucValidar, portasIn, "implementa")
+Rel(ucAprovar, portasIn, "implementa")
+Rel(ucCancelar, portasIn, "implementa")
+Rel(ucConsPlano, portasIn, "implementa")
+
+Rel(ucEdicao, modelo, "altera via raiz do agregado")
+Rel(ucValidar, svValid, "usa")
+Rel(ucAprovar, svValid, "revalida")
+Rel(ucAprovar, svOutros, "gera reservas")
+Rel(ucConsPlano, svOutros, "calcula livres")
+Rel(svValid, svOutros, "usa")
+Rel(svValid, modelo, "lê")
+
+Rel(ucConsulta, portasOut, "usa")
+Rel(ucEdicao, portasOut, "usa")
+Rel(ucAprovar, portasOut, "usa")
+Rel(ucCancelar, portasOut, "usa")
+Rel(ucConsPlano, portasOut, "usa")
+
+Rel(jpa, portasOut, "implementa")
+Rel(relogio, portasOut, "implementa")
+Rel(config, svValid, "instancia")
+Rel(jpa, bd, "SQL", "JDBC/Hibernate")
+Rel(flyway, bd, "migra e popula", "JDBC")
+@enduml

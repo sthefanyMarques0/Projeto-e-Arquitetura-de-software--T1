@@ -1,0 +1,15 @@
+@startuml c4-1-contexto
+!include <C4/C4_Context>
+LAYOUT_TOP_DOWN()
+
+title C4 Nível 1 – Contexto: Sistema de Gestão de Planos de Voo
+
+Person(usuario, "Usuário de planejamento de voo", "Elabora, valida, aprova, abandona e cancela planos de voo; consulta rede aérea, frota, disponibilidade e reservas.")
+
+System_Ext(cliente, "Aplicação cliente HTTP", "Postman, curl, VS Code REST Client ou futuro frontend. Fora do escopo de implementação.")
+
+System(sistema, "Sistema de Gestão de Planos de Voo", "Backend que mantém rede aérea, pilotos, aeronaves e planos de voo; valida percursos e regras; reserva altitudes e vagas na aprovação.")
+
+Rel(usuario, cliente, "Usa")
+Rel(cliente, sistema, "Faz requisições", "HTTP/JSON (API REST /api)")
+@enduml

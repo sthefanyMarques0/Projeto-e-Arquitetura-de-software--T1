@@ -1,0 +1,1101 @@
+{
+  "info": {
+    "name": "Planos de Voo - PAS (data de referência 2026-11-20)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Roteiro de demonstração da API. Rode as pastas na ordem. A data de referência é 2026-11-20. Para voltar aos dados iniciais, pare a aplicação e apague a pasta ./data."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "novoPlanoId",
+      "value": "100"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Consultas da carga inicial",
+      "item": [
+        {
+          "name": "Sistema",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            }
+          }
+        },
+        {
+          "name": "UC01 Aeroportos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/aeroportos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aeroportos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC02 Aerovias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/aerovias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aerovias"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC03 Pilotos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pilotos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pilotos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC04 Aeronaves",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/aeronaves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aeronaves"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 Planos aprovados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos?situacao=APROVADO",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos"
+              ],
+              "query": [
+                {
+                  "key": "situacao",
+                  "value": "APROVADO"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 Plano 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reservas do plano 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/1/reservas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "1",
+                "reservas"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Disponibilidade na data de referência",
+      "item": [
+        {
+          "name": "UC09 Altitudes livres R1 08:00-09:00 (29000 ocupada)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/disponibilidade/aerovias/R1/altitudes?inicio=2026-11-20T08:00:00&fim=2026-11-20T09:00:00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "disponibilidade",
+                "aerovias",
+                "R1",
+                "altitudes"
+              ],
+              "query": [
+                {
+                  "key": "inicio",
+                  "value": "2026-11-20T08:00:00"
+                },
+                {
+                  "key": "fim",
+                  "value": "2026-11-20T09:00:00"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC09 Altitudes livres R1 para PR-EXE (só 25-27 mil)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/disponibilidade/aerovias/R1/altitudes?inicio=2026-11-20T08:00:00&fim=2026-11-20T09:00:00&aeronave=PR-EXE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "disponibilidade",
+                "aerovias",
+                "R1",
+                "altitudes"
+              ],
+              "query": [
+                {
+                  "key": "inicio",
+                  "value": "2026-11-20T08:00:00"
+                },
+                {
+                  "key": "fim",
+                  "value": "2026-11-20T09:00:00"
+                },
+                {
+                  "key": "aeronave",
+                  "value": "PR-EXE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC10 Vagas livres CWB 08:00-10:00 (vaga 1 ocupada)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/disponibilidade/aeroportos/CWB/vagas?inicio=2026-11-20T08:00:00&fim=2026-11-20T10:00:00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "disponibilidade",
+                "aeroportos",
+                "CWB",
+                "vagas"
+              ],
+              "query": [
+                {
+                  "key": "inicio",
+                  "value": "2026-11-20T08:00:00"
+                },
+                {
+                  "key": "fim",
+                  "value": "2026-11-20T10:00:00"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Validar, aprovar e cancelar (plano 7)",
+      "item": [
+        {
+          "name": "UC11 Validar plano 7 (válido)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/7/validacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "7",
+                "validacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reservas do plano 7 (vazio: validar não reserva)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/7/reservas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "7",
+                "reservas"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC12 Aprovar plano 7 (200)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/7/aprovacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "7",
+                "aprovacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reservas do plano 7 (agora existem)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/7/reservas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "7",
+                "reservas"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 Cancelar plano 7 (200, libera reservas)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/7/cancelamento",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "7",
+                "cancelamento"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reservas do plano 7 (vazio de novo)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/7/reservas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "7",
+                "reservas"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Alterar plano 7 cancelado (409)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/7/percurso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "7",
+                "percurso"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trechos\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Conflito e cancelamento proibido",
+      "item": [
+        {
+          "name": "UC11 Validar plano 6 (conflito com plano 1 em R1)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/6/validacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "6",
+                "validacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC12 Aprovar plano 6 (422, nenhuma reserva)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/6/aprovacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "6",
+                "aprovacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reservas do plano 6 (vazio)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/6/reservas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "6",
+                "reservas"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 Cancelar plano 5 já executado (409)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/5/cancelamento",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "5",
+                "cancelamento"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Ciclo completo de um plano novo",
+      "item": [
+        {
+          "name": "UC05 Criar plano (201) - guarda o id",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotoId\": 103,\n  \"prefixoAeronave\": \"PT-AZU\",\n  \"origem\": \"POA\",\n  \"destino\": \"CWB\",\n  \"partidaPrevista\": \"2026-11-20T11:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "if (j.id) { pm.collectionVariables.set('novoPlanoId', j.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "UC07 Percurso descontínuo (R1 e depois R6)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/percurso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "percurso"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trechos\": [\n    {\n      \"aeroviaId\": \"R1\",\n      \"altitude\": 30000,\n      \"entradaPrevista\": \"2026-11-20T11:00:00\",\n      \"tipoPassagem\": \"SOBREVOO\"\n    },\n    {\n      \"aeroviaId\": \"R6\",\n      \"altitude\": 30000,\n      \"entradaPrevista\": \"2026-11-20T11:25:38\",\n      \"tipoPassagem\": \"POUSO\",\n      \"permanenciaMinutos\": 30,\n      \"vagaPretendida\": 5\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC11 Validar (percurso inconsistente)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/validacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "validacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 Horário incompatível com a duração calculada",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/percurso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "percurso"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trechos\": [\n    {\n      \"aeroviaId\": \"R1\",\n      \"altitude\": 30000,\n      \"entradaPrevista\": \"2026-11-20T11:00:00\",\n      \"tipoPassagem\": \"SOBREVOO\"\n    },\n    {\n      \"aeroviaId\": \"R4\",\n      \"altitude\": 30000,\n      \"entradaPrevista\": \"2026-11-20T11:20:00\",\n      \"tipoPassagem\": \"POUSO\",\n      \"permanenciaMinutos\": 30,\n      \"vagaPretendida\": 5\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC11 Validar (horário incompatível)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/validacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "validacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 Altitude proibida para passageiros (27000)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/percurso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "percurso"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trechos\": [\n    {\n      \"aeroviaId\": \"R1\",\n      \"altitude\": 27000,\n      \"entradaPrevista\": \"2026-11-20T11:00:00\",\n      \"tipoPassagem\": \"SOBREVOO\"\n    },\n    {\n      \"aeroviaId\": \"R4\",\n      \"altitude\": 27000,\n      \"entradaPrevista\": \"2026-11-20T11:25:38\",\n      \"tipoPassagem\": \"POUSO\",\n      \"permanenciaMinutos\": 30,\n      \"vagaPretendida\": 5\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC11 Validar (restrição da aeronave)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/validacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "validacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC06 Trocar aeronave para PT-ECO (pouca autonomia)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotoId\": 103,\n  \"prefixoAeronave\": \"PT-ECO\",\n  \"origem\": \"POA\",\n  \"destino\": \"CWB\",\n  \"partidaPrevista\": \"2026-11-20T11:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC08 Percurso com sobrevoo em FLN (608 km > 425 km)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/percurso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "percurso"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trechos\": [\n    {\n      \"aeroviaId\": \"R1\",\n      \"altitude\": 25000,\n      \"entradaPrevista\": \"2026-11-20T11:00:00\",\n      \"tipoPassagem\": \"SOBREVOO\"\n    },\n    {\n      \"aeroviaId\": \"R4\",\n      \"altitude\": 25000,\n      \"entradaPrevista\": \"2026-11-20T12:17:48\",\n      \"tipoPassagem\": \"POUSO\",\n      \"permanenciaMinutos\": 30,\n      \"vagaPretendida\": 5\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC11 Validar (autonomia insuficiente)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/validacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "validacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC06 Voltar para PT-AZU e partida 08:00",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotoId\": 103,\n  \"prefixoAeronave\": \"PT-AZU\",\n  \"origem\": \"POA\",\n  \"destino\": \"CWB\",\n  \"partidaPrevista\": \"2026-11-20T08:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC08 Percurso usando a vaga 1 de CWB (ocupada pelo plano 1)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/percurso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "percurso"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trechos\": [\n    {\n      \"aeroviaId\": \"R1\",\n      \"altitude\": 30000,\n      \"entradaPrevista\": \"2026-11-20T08:00:00\",\n      \"tipoPassagem\": \"SOBREVOO\"\n    },\n    {\n      \"aeroviaId\": \"R4\",\n      \"altitude\": 30000,\n      \"entradaPrevista\": \"2026-11-20T08:25:38\",\n      \"tipoPassagem\": \"POUSO\",\n      \"permanenciaMinutos\": 30,\n      \"vagaPretendida\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC11 Validar (vaga indisponível)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/validacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "validacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 Corrigir para a vaga 7",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/percurso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "percurso"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trechos\": [\n    {\n      \"aeroviaId\": \"R1\",\n      \"altitude\": 30000,\n      \"entradaPrevista\": \"2026-11-20T08:00:00\",\n      \"tipoPassagem\": \"SOBREVOO\"\n    },\n    {\n      \"aeroviaId\": \"R4\",\n      \"altitude\": 30000,\n      \"entradaPrevista\": \"2026-11-20T08:25:38\",\n      \"tipoPassagem\": \"POUSO\",\n      \"permanenciaMinutos\": 30,\n      \"vagaPretendida\": 7\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC11 Validar (válido)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/validacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "validacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC15 Abandonar plano em edição",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/abandono",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "abandono"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC12 Aprovar plano abandonado (409)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/{{novoPlanoId}}/aprovacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "{{novoPlanoId}}",
+                "aprovacao"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 Planos abandonados (continuam consultáveis)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos?situacao=ABANDONADO",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos"
+              ],
+              "query": [
+                {
+                  "key": "situacao",
+                  "value": "ABANDONADO"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Erros de requisição",
+      "item": [
+        {
+          "name": "Plano inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "9999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Data fora do formato (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotoId\": 101,\n  \"prefixoAeronave\": \"PT-AZU\",\n  \"origem\": \"POA\",\n  \"destino\": \"FLN\",\n  \"partidaPrevista\": \"20/11/2026 08:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Pouso sem permanência (400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos/6/percurso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos",
+                "6",
+                "percurso"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trechos\": [\n    {\n      \"aeroviaId\": \"R1\",\n      \"altitude\": 29000,\n      \"entradaPrevista\": \"2026-11-20T08:10:00\",\n      \"tipoPassagem\": \"POUSO\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Aeronave inexistente (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/planos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "planos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotoId\": 101,\n  \"prefixoAeronave\": \"XX-000\",\n  \"origem\": \"POA\",\n  \"destino\": \"FLN\",\n  \"partidaPrevista\": \"2026-11-21T08:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

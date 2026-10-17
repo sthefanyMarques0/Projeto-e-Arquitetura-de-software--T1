@@ -1,0 +1,18 @@
+@startuml c4-2-containers
+!include <C4/C4_Container>
+LAYOUT_TOP_DOWN()
+
+title C4 Nível 2 – Contêineres: Sistema de Gestão de Planos de Voo
+
+Person(usuario, "Usuário de planejamento de voo", "Elabora e gerencia planos de voo.")
+System_Ext(cliente, "Aplicação cliente HTTP", "Postman, curl, VS Code REST Client.")
+
+System_Boundary(sistema, "Sistema de Gestão de Planos de Voo") {
+  Container(api, "API de Planos de Voo", "Java 25, Spring Boot 4.1, Spring Data JPA, Flyway", "Expõe a API REST, executa os casos de uso e as regras do domínio e coordena as reservas de forma transacional. Ao iniciar, aplica as migrações e a carga inicial.")
+  ContainerDb(bd, "Banco de dados", "H2 em modo arquivo (./data/planos-de-voo.mv.db)", "Executa embutido no processo da API e persiste em disco: rede aérea, frota, planos, trechos e reservas por slot. Restrições UNIQUE impedem reserva duplicada de altitude ou vaga no mesmo slot.")
+}
+
+Rel(usuario, cliente, "Usa")
+Rel(cliente, api, "Chama endpoints", "HTTP/JSON")
+Rel(api, bd, "Lê e grava; migrações e carga inicial", "JDBC / JPA (Hibernate), Flyway")
+@enduml
