@@ -26,4 +26,9 @@ public class ConsultaAeroportosJpaAdapter implements ConsultaAeroportosPort {
     public Optional<Aeroporto> buscar(String codigo) {
         return repository.findById(codigo).map(RedeAereaPersistenceMapper::toDomain);
     }
+
+    @Override
+    public Aeroporto salvar(Aeroporto aeroporto) {
+        return RedeAereaPersistenceMapper.toDomain(repository.save(RedeAereaPersistenceMapper.toEntity(aeroporto)));
+    }
 }

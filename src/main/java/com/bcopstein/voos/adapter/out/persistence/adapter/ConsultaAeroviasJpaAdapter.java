@@ -36,6 +36,12 @@ public class ConsultaAeroviasJpaAdapter implements ConsultaAeroviasPort {
         return repository.findById(id).map(a -> RedeAereaPersistenceMapper.toDomain(a, aeroportosPorCodigo()));
     }
 
+    @Override
+    public Aerovia salvar(Aerovia aerovia) {
+        repository.save(RedeAereaPersistenceMapper.toEntity(aerovia));
+        return aerovia;
+    }
+
     private Map<String, Aeroporto> aeroportosPorCodigo() {
         return aeroportos.listar().stream().collect(Collectors.toMap(Aeroporto::getCodigo, Function.identity()));
     }
