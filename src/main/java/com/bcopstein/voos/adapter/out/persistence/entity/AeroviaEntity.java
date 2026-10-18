@@ -20,6 +20,13 @@ public class AeroviaEntity {
 
     protected AeroviaEntity() {}
 
+    public AeroviaEntity(String id, String origemCodigo, String destinoCodigo, BigDecimal distanciaKm) {
+        this.id = id;
+        this.origemCodigo = origemCodigo;
+        this.destinoCodigo = destinoCodigo;
+        this.distanciaKm = distanciaKm;
+    }
+
     public String getId() { return id; }
     public String getOrigemCodigo() { return origemCodigo; }
     public String getDestinoCodigo() { return destinoCodigo; }

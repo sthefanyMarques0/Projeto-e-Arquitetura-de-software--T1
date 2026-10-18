@@ -8,4 +8,6 @@ public interface ConsultaAeroviasPort {
     List<Aerovia> listar();
 
     Optional<Aerovia> buscar(String id);
+
+    Aerovia salvar(Aerovia aerovia);
 }

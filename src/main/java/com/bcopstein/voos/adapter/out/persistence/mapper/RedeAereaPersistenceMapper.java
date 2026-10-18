@@ -22,6 +22,15 @@ public final class RedeAereaPersistenceMapper {
                 entity.getDistanciaKm());
     }
 
+    public static AeroportoEntity toEntity(Aeroporto aeroporto) {
+        return new AeroportoEntity(aeroporto.getCodigo(), aeroporto.getNome(), aeroporto.getVagas());
+    }
+
+    public static AeroviaEntity toEntity(Aerovia aerovia) {
+        return new AeroviaEntity(aerovia.getId(), aerovia.getOrigem().getCodigo(),
+                aerovia.getDestino().getCodigo(), aerovia.getDistanciaKm());
+    }
+
     public static Piloto toDomain(PilotoEntity entity) {
         return new Piloto(entity.getId(), entity.getNome());
     }

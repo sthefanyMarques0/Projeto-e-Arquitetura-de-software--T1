@@ -8,4 +8,6 @@ public interface ConsultaAeroportosPort {
     List<Aeroporto> listar();
 
     Optional<Aeroporto> buscar(String codigo);
+
+    Aeroporto salvar(Aeroporto aeroporto);
 }

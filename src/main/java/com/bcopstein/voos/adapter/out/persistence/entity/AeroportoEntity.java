@@ -14,6 +14,12 @@ public class AeroportoEntity {
 
     protected AeroportoEntity() {}
 
+    public AeroportoEntity(String codigo, String nome, Integer vagas) {
+        this.codigo = codigo;
+        this.nome = nome;
+        this.vagas = vagas;
+    }
+
     public String getCodigo() { return codigo; }
     public String getNome() { return nome; }
     public Integer getVagas() { return vagas; }
