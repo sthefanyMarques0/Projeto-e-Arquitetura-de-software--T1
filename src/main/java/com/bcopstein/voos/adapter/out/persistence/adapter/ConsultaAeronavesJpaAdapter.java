@@ -26,4 +26,9 @@ public class ConsultaAeronavesJpaAdapter implements ConsultaAeronavesPort {
     public Optional<Aeronave> buscar(String prefixo) {
         return repository.findById(prefixo).map(AeronavePersistenceMapper::toDomain);
     }
+
+    @Override
+    public Aeronave salvar(Aeronave aeronave) {
+        return AeronavePersistenceMapper.toDomain(repository.save(AeronavePersistenceMapper.toEntity(aeronave)));
+    }
 }

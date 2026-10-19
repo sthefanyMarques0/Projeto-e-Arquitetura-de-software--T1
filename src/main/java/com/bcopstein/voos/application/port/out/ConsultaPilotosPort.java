@@ -8,4 +8,6 @@ public interface ConsultaPilotosPort {
     List<Piloto> listar();
 
     Optional<Piloto> buscar(Long id);
+
+    Piloto salvar(Piloto piloto);
 }

@@ -8,4 +8,6 @@ public interface ConsultaAeronavesPort {
     List<Aeronave> listar();
 
     Optional<Aeronave> buscar(String prefixo);
+
+    Aeronave salvar(Aeronave aeronave);
 }

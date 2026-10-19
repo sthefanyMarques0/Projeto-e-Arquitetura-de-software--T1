@@ -5,16 +5,55 @@ Base: `http://localhost:8080`. Datas no formato `AAAA-MM-DDTHH:mm:ss`, sem fuso,
 
 O roteiro completo de demonstração está em [`planos-de-voo.postman_collection.json`](planos-de-voo.postman_collection.json) (Postman → Import).
 
-## Rede aérea, pilotos e aeronaves (somente consulta)
+## Rede aérea, pilotos e aeronaves
 
-Esses dados vêm da carga inicial (migrações Flyway V2 e V3); não há endpoints de cadastro.
+A carga inicial (migrações Flyway V2 e V3) traz a malha, os pilotos e as aeronaves; novos itens podem ser cadastrados pela API.
 
-| Método | Rota | Caso de uso | Resposta |
-|---|---|---|---|
-| GET | `/api/aeroportos` | UC01 | `200` lista de `{codigo, nome, vagas}` |
-| GET | `/api/aerovias` | UC02 | `200` lista de `{id, origem, destino, distanciaKm}` |
-| GET | `/api/pilotos` | UC03 | `200` lista de `{id, nome}` |
-| GET | `/api/aeronaves` | UC04 | `200` lista com `prefixo, categoria, velocidadeCruzeiroKmH, autonomiaNominalKm` e os campos da categoria |
+| Método | Rota | Caso de uso | Sucesso | Erros |
+|---|---|---|---|---|
+| GET | `/api/aeroportos` | UC01 Consultar aeroportos | `200` lista de `{codigo, nome, vagas}` | |
+| POST | `/api/aeroportos` | UC01 Cadastrar aeroporto | `201` + `Location` | 400, 409 |
+| GET | `/api/aerovias` | UC02 Consultar aerovias | `200` lista de `{id, origem, destino, distanciaKm}` | |
+| POST | `/api/aerovias` | UC02 Cadastrar aerovia | `201` + `Location` | 400, 404, 409 |
+| GET | `/api/pilotos` | UC03 Consultar pilotos | `200` lista de `{id, nome}` | |
+| POST | `/api/pilotos` | UC03 Cadastrar piloto | `201` + `Location` | 400, 409 |
+| GET | `/api/aeronaves` | UC04 Consultar aeronaves | `200` lista com `prefixo, categoria, velocidadeCruzeiroKmH, autonomiaNominalKm` e os campos da categoria | |
+| POST | `/api/aeronaves` | UC04 Cadastrar aeronave | `201` + `Location` | 400, 409 |
+
+Erros dos cadastros: `409` quando o código, id ou prefixo já existe (nada é sobrescrito; aerovias são imutáveis); `404` quando a aerovia referencia aeroporto inexistente; `400` para campo faltando ou inválido (vagas negativas, distância ou velocidade não positivas, origem igual ao destino, campos que não combinam com a categoria).
+
+### Cadastrar aeroporto (AeroportoRequest)
+
+```json
+{ "codigo": "SSA", "nome": "Aeroporto de Salvador", "vagas": 30 }
+```
+
+### Cadastrar aerovia (AeroviaRequest)
+
+```json
+{ "id": "R9", "origem": "POA", "destino": "SSA", "distanciaKm": 2340 }
+```
+
+### Cadastrar piloto (PilotoRequest)
+
+```json
+{ "id": 105, "nome": "Cmte. Joana Lima" }
+```
+
+### Cadastrar aeronave (AeronaveRequest)
+
+`categoria`: `PARTICULAR`, `COMERCIAL_PASSAGEIROS` ou `COMERCIAL_CARGA`. Cada categoria exige os seus campos e não aceita os das outras:
+
+| Categoria | Obrigatórios além de prefixo, velocidade e autonomia |
+|---|---|
+| `PARTICULAR` | `empresaManutencao` |
+| `COMERCIAL_PASSAGEIROS` | `companhiaAerea`, `capacidadeMaximaPassageiros` |
+| `COMERCIAL_CARGA` | `companhiaAerea`, `capacidadeMaximaToneladas` |
+
+```json
+{ "prefixo": "PR-PAX", "categoria": "COMERCIAL_PASSAGEIROS", "velocidadeCruzeiroKmH": 840,
+  "autonomiaNominalKm": 4000, "companhiaAerea": "LATAM", "capacidadeMaximaPassageiros": 180 }
+```
 
 ## Disponibilidade (não reserva nada)
 

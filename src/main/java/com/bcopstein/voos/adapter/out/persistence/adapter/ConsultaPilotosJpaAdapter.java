@@ -26,4 +26,9 @@ public class ConsultaPilotosJpaAdapter implements ConsultaPilotosPort {
     public Optional<Piloto> buscar(Long id) {
         return repository.findById(id).map(RedeAereaPersistenceMapper::toDomain);
     }
+
+    @Override
+    public Piloto salvar(Piloto piloto) {
+        return RedeAereaPersistenceMapper.toDomain(repository.save(RedeAereaPersistenceMapper.toEntity(piloto)));
+    }
 }

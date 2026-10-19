@@ -58,7 +58,8 @@ public class TratadorDeErros {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErroResponse> corpoIlegivel(HttpMessageNotReadableException e) {
         return resposta(HttpStatus.BAD_REQUEST,
-                "Corpo da requisição ilegível. Datas devem seguir AAAA-MM-DDTHH:mm:ss e tipoPassagem deve ser SOBREVOO ou POUSO.",
+                "Corpo da requisição ilegível. Datas devem seguir AAAA-MM-DDTHH:mm:ss, tipoPassagem deve ser SOBREVOO ou POUSO "
+                        + "e categoria deve ser PARTICULAR, COMERCIAL_PASSAGEIROS ou COMERCIAL_CARGA.",
                 List.of());
     }
 

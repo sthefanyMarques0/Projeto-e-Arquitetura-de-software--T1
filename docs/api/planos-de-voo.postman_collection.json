@@ -1096,6 +1096,420 @@
           }
         }
       ]
+    },
+    {
+      "name": "7. Cadastros de rede aérea, pilotos e aeronaves",
+      "item": [
+        {
+          "name": "UC01 Cadastrar aeroporto SSA (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aeroportos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aeroportos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"SSA\",\n  \"nome\": \"Aeroporto de Salvador\",\n  \"vagas\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC01 Aeroportos (SSA aparece)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/aeroportos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aeroportos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC01 Cadastrar POA de novo (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aeroportos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aeroportos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"POA\",\n  \"nome\": \"Outro\",\n  \"vagas\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC02 Cadastrar aerovia R9 POA→SSA (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aerovias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aerovias"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"R9\",\n  \"origem\": \"POA\",\n  \"destino\": \"SSA\",\n  \"distanciaKm\": 2340\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC02 Aerovias (R9 aparece)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/aerovias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aerovias"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC02 Sobrescrever R1 (409, aerovia imutável)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aerovias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aerovias"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"R1\",\n  \"origem\": \"POA\",\n  \"destino\": \"GRU\",\n  \"distanciaKm\": 865\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC02 Aerovia com aeroporto inexistente (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aerovias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aerovias"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"R10\",\n  \"origem\": \"POA\",\n  \"destino\": \"XXX\",\n  \"distanciaKm\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC02 Aerovia com origem igual ao destino (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aerovias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aerovias"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"R10\",\n  \"origem\": \"POA\",\n  \"destino\": \"POA\",\n  \"distanciaKm\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC03 Cadastrar piloto 105 (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pilotos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pilotos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 105,\n  \"nome\": \"Cmte. Joana Lima\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC03 Pilotos (105 aparece)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pilotos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pilotos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC04 Cadastrar aeronave particular (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aeronaves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aeronaves"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prefixo\": \"PT-NEW\",\n  \"categoria\": \"PARTICULAR\",\n  \"velocidadeCruzeiroKmH\": 500,\n  \"autonomiaNominalKm\": 1500,\n  \"empresaManutencao\": \"Oficina Aero Sul\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC04 Cadastrar aeronave de passageiros (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aeronaves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aeronaves"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prefixo\": \"PR-PAX\",\n  \"categoria\": \"COMERCIAL_PASSAGEIROS\",\n  \"velocidadeCruzeiroKmH\": 840,\n  \"autonomiaNominalKm\": 4000,\n  \"companhiaAerea\": \"LATAM\",\n  \"capacidadeMaximaPassageiros\": 180\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC04 Cadastrar aeronave de carga (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aeronaves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aeronaves"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prefixo\": \"PR-CAR\",\n  \"categoria\": \"COMERCIAL_CARGA\",\n  \"velocidadeCruzeiroKmH\": 700,\n  \"autonomiaNominalKm\": 4500,\n  \"companhiaAerea\": \"Sideral Cargas\",\n  \"capacidadeMaximaToneladas\": 20\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC04 Carga sem capacidade em toneladas (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/aeronaves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aeronaves"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prefixo\": \"PR-ERR\",\n  \"categoria\": \"COMERCIAL_CARGA\",\n  \"velocidadeCruzeiroKmH\": 700,\n  \"autonomiaNominalKm\": 4500,\n  \"companhiaAerea\": \"Sideral Cargas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "UC04 Aeronaves (novas aparecem)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/aeronaves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "aeronaves"
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

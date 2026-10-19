@@ -35,6 +35,10 @@ public final class RedeAereaPersistenceMapper {
         return new Piloto(entity.getId(), entity.getNome());
     }
 
+    public static PilotoEntity toEntity(Piloto piloto) {
+        return new PilotoEntity(piloto.getId(), piloto.getNome());
+    }
+
     private static Aeroporto exigir(Map<String, Aeroporto> aeroportos, String codigo) {
         Aeroporto aeroporto = aeroportos.get(codigo);
         if (aeroporto == null) {

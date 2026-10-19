@@ -12,4 +12,4 @@ Fonte PlantUML: [`diagrama-dominio.puml`](diagrama-dominio.puml).
 - **`Periodo` e `Slot` são objetos de valor** que concentram a regra de slots `[início, fim)` de uma hora alinhados à hora cheia.
 - **`Reserva` referencia o plano pelo identificador**, não pelo objeto, para não puxar o agregado do plano ao consultar ocupação.
 - **Serviços de domínio** recebem as reservas existentes como parâmetro, sem acessar o banco: o caso de uso as carrega pela porta de saída.
-- **Aeroportos, aerovias, pilotos e aeronaves** vêm da carga inicial e são apenas consultados (orientação do professor).
+- **Aeroportos, aerovias, pilotos e aeronaves** vêm da carga inicial e também podem ser cadastrados pela API. Uma **aerovia é imutável**: depois de cadastrada não é alterada nem excluída, e um novo cadastro com o mesmo identificador é recusado.

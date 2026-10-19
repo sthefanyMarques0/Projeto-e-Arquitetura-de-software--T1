@@ -63,7 +63,7 @@ curl -X POST http://localhost:8080/api/planos/7/validacao
 
 Planos criados pela API recebem ids a partir de 100.
 
-Aeroportos, aerovias, pilotos e aeronaves vêm apenas da carga inicial (orientação do professor): a API os consulta, sem endpoints de cadastro. Novos itens entram por uma nova migração (`V5__...sql`), sem alterar o código.
+Aeroportos, aerovias, pilotos e aeronaves vêm da carga inicial e também podem ser cadastrados pela API (`POST /api/aeroportos`, `/api/aerovias`, `/api/pilotos`, `/api/aeronaves`). Identificador repetido é recusado com `409`: aerovias nunca são alteradas ou excluídas. Os cadastros feitos pela API persistem em `./data`; para voltar aos dados iniciais, apague essa pasta.
 
 ## Relógio da aplicação
 
