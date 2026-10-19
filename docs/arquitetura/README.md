@@ -19,7 +19,7 @@ domain                         núcleo, sem Spring nem JPA
 application
   port.in                      interfaces dos casos de uso (+ comandos)
   port.out                     Consulta*Port, PlanoDeVooPort, ReservaPort, RelogioPort
-  usecase.cadastro             consultas de rede e frota
+  usecase.cadastro             consultas e cadastros de rede e frota
   usecase.plano                criar, editar, percurso, validar, aprovar, consultar, abandonar, cancelar
   usecase.disponibilidade      altitudes e vagas livres
   exception                    RecursoNaoEncontrado (404), PlanoInvalido (422), ConflitoDeReserva (409)

@@ -10,15 +10,15 @@ ContainerDb(bd, "Banco de dados", "H2 (arquivo)", "Rede aérea, frota, planos e 
 Container_Boundary(api, "API de Planos de Voo") {
 
   Boundary(entrada, "adapter.in.rest (adaptadores de entrada)") {
-    Component(ctrlRede, "RedeAereaController, PilotoController, AeronaveController", "@RestController", "GET aeroportos, aerovias, pilotos e aeronaves (UC01–UC04)")
+    Component(ctrlRede, "RedeAereaController, PilotoController, AeronaveController", "@RestController", "GET e POST de aeroportos, aerovias, pilotos e aeronaves (UC01–UC04)")
     Component(ctrlPlano, "PlanoDeVooController", "@RestController", "Criar, editar, percurso, validar, aprovar, abandonar, cancelar, consultar planos e reservas (UC05–UC08, UC11–UC16)")
     Component(ctrlDisp, "DisponibilidadeController", "@RestController", "Altitudes livres em aerovia e vagas livres em aeroporto por período (UC09, UC10)")
     Component(erros, "TratadorDeErros", "@RestControllerAdvice", "Exceções → 400/404/409/422 com corpo padronizado")
   }
 
   Boundary(aplicacao, "application (portas e casos de uso)") {
-    Component(portasIn, "Portas de entrada", "Interfaces (port.in)", "ConsultarAeroportos, CriarPlano, DefinirPercurso, ValidarPlano, AprovarPlano, CancelarPlano...")
-    Component(ucConsulta, "Consultas de rede e frota", "usecase.cadastro, @Service", "Listam aeroportos, aerovias, pilotos e aeronaves")
+    Component(portasIn, "Portas de entrada", "Interfaces (port.in)", "ConsultarAeroportos, CadastrarAeroporto, CadastrarAerovia, CriarPlano, DefinirPercurso, ValidarPlano, AprovarPlano, CancelarPlano...")
+    Component(ucConsulta, "Consultas e cadastros de rede e frota", "usecase.cadastro, @Service @Transactional", "Listam e cadastram aeroportos, aerovias, pilotos e aeronaves; recusam identificador repetido (aerovia imutável)")
     Component(ucEdicao, "Criar, editar, definir percurso, abandonar", "usecase.plano, @Service", "Alterações só em EM_EDICAO; chegada calculada pelo domínio")
     Component(ucValidar, "ValidarPlanoUseCase", "@Service", "Valida sem reservar nem mudar a situação")
     Component(ucAprovar, "AprovarPlanoUseCase", "@Service @Transactional", "Partida futura; revalida; grava todas as reservas; APROVADO. Falha = rollback")

@@ -17,4 +17,21 @@ public final class AeronavePersistenceMapper {
             default -> throw new IllegalStateException("Categoria persistida desconhecida: " + entity.getCategoria());
         };
     }
+
+    public static AeronaveEntity toEntity(Aeronave aeronave) {
+        String categoria = aeronave.getCategoria().name();
+        if (aeronave instanceof AeronaveParticular a) {
+            return new AeronaveEntity(a.getPrefixo(), categoria, a.getVelocidadeCruzeiroKmH(), a.getAutonomiaNominalKm(),
+                    a.getEmpresaManutencao(), null, null, null);
+        }
+        if (aeronave instanceof AeronavePassageiros a) {
+            return new AeronaveEntity(a.getPrefixo(), categoria, a.getVelocidadeCruzeiroKmH(), a.getAutonomiaNominalKm(),
+                    null, a.getCompanhiaAerea(), a.getCapacidadeMaximaPassageiros(), null);
+        }
+        if (aeronave instanceof AeronaveCarga a) {
+            return new AeronaveEntity(a.getPrefixo(), categoria, a.getVelocidadeCruzeiroKmH(), a.getAutonomiaNominalKm(),
+                    null, a.getCompanhiaAerea(), null, a.getCapacidadeMaximaToneladas());
+        }
+        throw new IllegalArgumentException("Tipo de aeronave não suportado: " + aeronave.getClass().getSimpleName());
+    }
 }

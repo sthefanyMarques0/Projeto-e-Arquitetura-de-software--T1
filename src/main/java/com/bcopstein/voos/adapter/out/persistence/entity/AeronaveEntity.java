@@ -22,6 +22,19 @@ public class AeronaveEntity {
 
     protected AeronaveEntity() {}
 
+    public AeronaveEntity(String prefixo, String categoria, BigDecimal velocidadeCruzeiroKmH,
+                          BigDecimal autonomiaNominalKm, String empresaManutencao, String companhiaAerea,
+                          Integer capacidadeMaximaPassageiros, BigDecimal capacidadeMaximaToneladas) {
+        this.prefixo = prefixo;
+        this.categoria = categoria;
+        this.velocidadeCruzeiroKmH = velocidadeCruzeiroKmH;
+        this.autonomiaNominalKm = autonomiaNominalKm;
+        this.empresaManutencao = empresaManutencao;
+        this.companhiaAerea = companhiaAerea;
+        this.capacidadeMaximaPassageiros = capacidadeMaximaPassageiros;
+        this.capacidadeMaximaToneladas = capacidadeMaximaToneladas;
+    }
+
     public String getPrefixo() { return prefixo; }
     public String getCategoria() { return categoria; }
     public BigDecimal getVelocidadeCruzeiroKmH() { return velocidadeCruzeiroKmH; }
