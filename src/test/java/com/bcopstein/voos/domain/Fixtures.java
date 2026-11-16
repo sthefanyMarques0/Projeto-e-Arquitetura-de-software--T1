@@ -34,7 +34,7 @@ public final class Fixtures {
 
     public static final Piloto PILOTO = new Piloto(101L, "Cmte. Carlos Silva");
 
-    public static final LocalDateTime REF_08H = LocalDateTime.of(2026, 11, 20, 8, 0);
+    public static final LocalDateTime REF_08H = LocalDateTime.of(2027, 1, 15, 8, 0);
 
     private Fixtures() {}
 

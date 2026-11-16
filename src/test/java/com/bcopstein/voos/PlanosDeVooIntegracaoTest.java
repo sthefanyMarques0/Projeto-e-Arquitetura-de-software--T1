@@ -8,6 +8,7 @@ import com.bcopstein.voos.application.exception.PlanoInvalidoException;
 import com.bcopstein.voos.application.port.in.AprovarPlano;
 import com.bcopstein.voos.application.port.in.CancelarPlano;
 import com.bcopstein.voos.application.port.in.ConsultarAeronaves;
+import com.bcopstein.voos.application.port.in.ConsultarDisponibilidade;
 import com.bcopstein.voos.application.port.in.ConsultarAeroportos;
 import com.bcopstein.voos.application.port.in.ConsultarAerovias;
 import com.bcopstein.voos.application.port.in.ConsultarPlanos;
@@ -30,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Sobe a aplicação com H2 em memória e as migrações do Flyway (mesma carga inicial da entrega).
  * Cada teste roda numa transação desfeita ao final, mantendo os dados iniciais intactos.
- * O relógio está fixo em 2026-11-19T12:00 (ver src/test/resources/application.properties).
+ * O relógio está fixo em 2027-01-14T12:00 (ver src/test/resources/application.properties).
  */
 @SpringBootTest
 @Transactional
@@ -44,6 +45,7 @@ class PlanosDeVooIntegracaoTest {
     @Autowired ValidarPlano validarPlano;
     @Autowired AprovarPlano aprovarPlano;
     @Autowired CancelarPlano cancelarPlano;
+    @Autowired ConsultarDisponibilidade consultarDisponibilidade;
 
     @Test
     void cargaInicialDisponivel() {
@@ -89,16 +91,52 @@ class PlanosDeVooIntegracaoTest {
 
     @Test
     void criarDefinirPercursoEAprovar() {
-        LocalDateTime partida = LocalDateTime.of(2026, 11, 20, 18, 0);
+        LocalDateTime partida = LocalDateTime.of(2027, 1, 15, 18, 0);
         PlanoDeVoo plano = criarPlano.criar(new DadosPlanoCommand(103L, "PP-GLO", "POA", "GRU", partida));
         assertEquals(SituacaoPlano.EM_EDICAO, plano.getSituacao());
 
         PlanoDeVoo comPercurso = definirPercurso.definir(plano.getId(),
                 List.of(new TrechoCommand("R2", 33_000, partida, TipoPassagem.POUSO, 45, 20)));
         // 865 km / 850 km/h = 3663,53 s -> 3664 s = 1h01min04s
-        assertEquals(LocalDateTime.of(2026, 11, 20, 19, 1, 4), comPercurso.getChegadaFinal().orElseThrow());
+        assertEquals(LocalDateTime.of(2027, 1, 15, 19, 1, 4), comPercurso.getChegadaFinal().orElseThrow());
 
         assertEquals(SituacaoPlano.APROVADO, aprovarPlano.aprovar(plano.getId()).getSituacao());
         assertThrows(OperacaoNaoPermitidaException.class, () -> definirPercurso.definir(plano.getId(), List.of()));
+    }
+
+    /** Seção 8.3: validar não reserva; a aprovação considera a disponibilidade no momento em que ocorre. */
+    @Test
+    void aprovacaoConsideraDisponibilidadeNoMomento() {
+        LocalDateTime p1 = LocalDateTime.of(2027, 1, 15, 18, 0);
+        LocalDateTime p2 = LocalDateTime.of(2027, 1, 15, 18, 20);
+        PlanoDeVoo primeiro = criarPlano.criar(new DadosPlanoCommand(102L, "PP-GLO", "GRU", "CWB", p1));
+        definirPercurso.definir(primeiro.getId(), List.of(new TrechoCommand("R7", 31_000, p1, TipoPassagem.POUSO, 30, 12)));
+        PlanoDeVoo segundo = criarPlano.criar(new DadosPlanoCommand(103L, "PT-AZU", "GRU", "CWB", p2));
+        definirPercurso.definir(segundo.getId(), List.of(new TrechoCommand("R7", 31_000, p2, TipoPassagem.POUSO, 30, 13)));
+
+        // os dois usam R7 a 31.000 pés no slot 18:00–19:00, mas nenhum reservou nada ainda
+        assertTrue(validarPlano.validar(primeiro.getId()).isValido());
+        assertTrue(validarPlano.validar(segundo.getId()).isValido());
+
+        aprovarPlano.aprovar(primeiro.getId());
+        PlanoInvalidoException erro = assertThrows(PlanoInvalidoException.class, () -> aprovarPlano.aprovar(segundo.getId()));
+        assertTrue(erro.getErros().stream().anyMatch(e -> e.contains("R7 a 31000")), erro.getErros().toString());
+        assertEquals(SituacaoPlano.EM_EDICAO, consultarPlanos.porId(segundo.getId()).getSituacao());
+        assertEquals(0, consultarPlanos.reservasDoPlano(segundo.getId()).size());
+    }
+
+    /** Seção 8.3: o 1º trecho tem recurso livre e o 2º conflita; nenhuma reserva parcial pode sobrar. */
+    @Test
+    void aprovacaoMalsucedidaNaoDeixaReservasParciais() {
+        LocalDateTime partida = LocalDateTime.of(2027, 1, 15, 8, 0);
+        PlanoDeVoo plano = criarPlano.criar(new DadosPlanoCommand(104L, "PT-AZU", "POA", "CWB", partida));
+        definirPercurso.definir(plano.getId(), List.of(
+                new TrechoCommand("R1", 31_000, partida, TipoPassagem.SOBREVOO, null, null),
+                new TrechoCommand("R4", 29_000, LocalDateTime.of(2027, 1, 15, 8, 25, 38), TipoPassagem.POUSO, 30, 2)));
+
+        assertThrows(PlanoInvalidoException.class, () -> aprovarPlano.aprovar(plano.getId()));
+        assertEquals(0, consultarPlanos.reservasDoPlano(plano.getId()).size());
+        // a altitude do 1º trecho, que estava livre, continua livre
+        assertTrue(consultarDisponibilidade.altitudesDisponiveis("R1", partida, partida.plusHours(1), null).contains(31_000));
     }
 }

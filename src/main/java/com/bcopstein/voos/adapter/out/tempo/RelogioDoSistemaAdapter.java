@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  * Instante atual no fuso operacional America/Sao_Paulo, independente do fuso do servidor.
  * Para demonstrações e testes, a propriedade "planos.relogio.agora" fixa o instante
- * (ex.: planos.relogio.agora=2026-11-20T09:00:00).
+ * (ex.: planos.relogio.agora=2027-01-15T09:00:00).
  */
 @Component
 public class RelogioDoSistemaAdapter implements RelogioPort {

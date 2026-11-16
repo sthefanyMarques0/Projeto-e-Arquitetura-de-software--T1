@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 
 class AeronaveTest {
-    private static final LocalDateTime DIA = LocalDateTime.of(2026, 11, 20, 0, 0);
+    private static final LocalDateTime DIA = LocalDateTime.of(2027, 1, 15, 0, 0);
 
     @Test
     void duracaoArredondaSegundosParaCima() {

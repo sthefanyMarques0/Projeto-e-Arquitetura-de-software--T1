@@ -58,8 +58,8 @@ class ServicoValidacaoPlanoTest {
     @Test
     void chegadaCalculadaPeloSistema() {
         PlanoDeVoo p = poaFlnCwb(REF_08H, 29_000);
-        assertEquals(LocalDateTime.of(2026, 11, 20, 8, 25, 38), p.getTrechos().get(0).getChegadaPrevista());
-        assertEquals(LocalDateTime.of(2026, 11, 20, 8, 42, 56), p.getTrechos().get(1).getChegadaPrevista());
+        assertEquals(LocalDateTime.of(2027, 1, 15, 8, 25, 38), p.getTrechos().get(0).getChegadaPrevista());
+        assertEquals(LocalDateTime.of(2027, 1, 15, 8, 42, 56), p.getTrechos().get(1).getChegadaPrevista());
     }
 
     @Test
@@ -135,7 +135,7 @@ class ServicoValidacaoPlanoTest {
 
     @Test
     void vooDeveTerminarNoMesmoDia() {
-        LocalDateTime tarde = LocalDateTime.of(2026, 11, 20, 23, 50);
+        LocalDateTime tarde = LocalDateTime.of(2027, 1, 15, 23, 50);
         Trecho t1 = Trecho.criar(R1, 29_000, tarde, TipoPassagem.POUSO, 30, 1, PASSAGEIROS);
         ResultadoValidacao r = validacao.validar(plano(PASSAGEIROS, POA, FLN, tarde, List.of(t1)), List.of());
         assertTrue(contem(r, "mesmo dia"), r.getErros().toString());

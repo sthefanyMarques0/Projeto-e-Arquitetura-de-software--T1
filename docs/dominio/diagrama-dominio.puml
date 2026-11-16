@@ -192,7 +192,7 @@ ServicoValidacaoPlano ..> ResultadoValidacao : produz >
 ServicoValidacaoPlano ..> PlanoDeVoo : valida >
 ServicoReservas ..> Reserva : cria >
 
-note "<b>Dados pré-carregados</b>\nAeroportos, aerovias, pilotos e aeronaves\nvêm das migrações Flyway (V2, V3).\nO sistema apenas os consulta." as NCarga
+note "<b>Carga inicial e cadastro</b>\nAeroportos, aerovias, pilotos e aeronaves\nvêm das migrações Flyway (V2, V3) e podem\nser cadastrados pela API. Identificador\nrepetido é recusado: Aerovia é imutável." as NCarga
 NCarga .. Aeroporto
 NCarga .. Aerovia
 NCarga .. Piloto
