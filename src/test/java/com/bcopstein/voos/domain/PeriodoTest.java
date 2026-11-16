@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 class PeriodoTest {
     private static LocalDateTime h(int hora, int minuto) {
-        return LocalDateTime.of(2026, 11, 20, hora, minuto);
+        return LocalDateTime.of(2027, 1, 15, hora, minuto);
     }
 
     @Test

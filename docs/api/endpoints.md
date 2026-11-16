@@ -1,6 +1,6 @@
 # API REST — operações, parâmetros, requisições e respostas
 
-Documentação da API (equivalente ao OpenAPI, conforme seção 8.5 do enunciado).
+Guia da API com exemplos. A especificação formal está em [`openapi.yaml`](openapi.yaml) (OpenAPI 3, seção 8.5 do enunciado).
 Base: `http://localhost:8080`. Datas no formato `AAAA-MM-DDTHH:mm:ss`, sem fuso, interpretadas em America/Sao_Paulo.
 
 O roteiro completo de demonstração está em [`planos-de-voo.postman_collection.json`](planos-de-voo.postman_collection.json) (Postman → Import).
@@ -65,7 +65,7 @@ Erros dos cadastros: `409` quando o código, id ou prefixo já existe (nada é s
 Altitudes: devolve as altitudes de 25.000 a 35.000 pés livres em **todos** os slots do período. Com `aeronave=<prefixo>`, aplica também as regras da categoria.
 
 ```json
-{ "aeroviaId": "R1", "inicio": "2026-11-20T08:00:00", "fim": "2026-11-20T09:00:00",
+{ "aeroviaId": "R1", "inicio": "2027-01-15T08:00:00", "fim": "2027-01-15T09:00:00",
   "altitudesDisponiveis": [25000, 26000, 27000, 28000, 30000, 31000, 32000, 33000, 34000, 35000] }
 ```
 
@@ -92,7 +92,7 @@ Vagas: `{ "aeroportoCodigo": "CWB", "inicio": ..., "fim": ..., "quantidadeDispon
 
 ```json
 { "pilotoId": 103, "prefixoAeronave": "PT-AZU", "origem": "POA", "destino": "CWB",
-  "partidaPrevista": "2026-11-20T11:00:00" }
+  "partidaPrevista": "2027-01-15T11:00:00" }
 ```
 
 Ao trocar a aeronave na edição, as chegadas dos trechos são recalculadas.
@@ -103,8 +103,8 @@ Substitui o percurso inteiro (adicionar, remover e reordenar = enviar a nova lis
 
 ```json
 { "trechos": [
-  { "aeroviaId": "R1", "altitude": 30000, "entradaPrevista": "2026-11-20T11:00:00", "tipoPassagem": "SOBREVOO" },
-  { "aeroviaId": "R4", "altitude": 30000, "entradaPrevista": "2026-11-20T11:25:38", "tipoPassagem": "POUSO",
+  { "aeroviaId": "R1", "altitude": 30000, "entradaPrevista": "2027-01-15T11:00:00", "tipoPassagem": "SOBREVOO" },
+  { "aeroviaId": "R4", "altitude": 30000, "entradaPrevista": "2027-01-15T11:25:38", "tipoPassagem": "POUSO",
     "permanenciaMinutos": 30, "vagaPretendida": 7 }
 ] }
 ```
@@ -116,11 +116,11 @@ Em `POUSO`, `permanenciaMinutos` (≥ 1) e `vagaPretendida` são obrigatórios; 
 ```json
 { "id": 100, "situacao": "EM_EDICAO", "pilotoId": 103, "pilotoNome": "Cmte. Daniel Oliveira",
   "prefixoAeronave": "PT-AZU", "categoriaAeronave": "COMERCIAL_PASSAGEIROS",
-  "origem": "POA", "destino": "CWB", "partidaPrevista": "2026-11-20T11:00:00",
-  "chegadaPrevistaDestino": "2026-11-20T11:42:56",
+  "origem": "POA", "destino": "CWB", "partidaPrevista": "2027-01-15T11:00:00",
+  "chegadaPrevistaDestino": "2027-01-15T11:42:56",
   "trechos": [ { "ordem": 1, "aeroviaId": "R1", "origem": "POA", "destino": "FLN", "distanciaKm": 363,
-                 "altitude": 30000, "entradaPrevista": "2026-11-20T11:00:00",
-                 "chegadaPrevista": "2026-11-20T11:25:38", "duracaoSegundos": 1538, "tipoPassagem": "SOBREVOO" } ] }
+                 "altitude": 30000, "entradaPrevista": "2027-01-15T11:00:00",
+                 "chegadaPrevista": "2027-01-15T11:25:38", "duracaoSegundos": 1538, "tipoPassagem": "SOBREVOO" } ] }
 ```
 
 ### Validação
@@ -129,7 +129,7 @@ Em `POUSO`, `permanenciaMinutos` (≥ 1) e `vagaPretendida` são obrigatórios; 
 
 ```json
 { "planoId": 6, "valido": false,
-  "erros": ["Trecho 1 (R1): aerovia R1 a 29000 pés indisponível nos slots [2026-11-20 08:00–09:00] (reservado por outro plano aprovado)."] }
+  "erros": ["Trecho 1 (R1): aerovia R1 a 29000 pés indisponível nos slots [2027-01-15 08:00–09:00] (reservado por outro plano aprovado)."] }
 ```
 
 ### Aprovação
@@ -140,9 +140,9 @@ Exige partida estritamente futura. Revalida, grava **todas** as reservas e muda 
 
 ```json
 [ { "id": 1, "planoId": 1, "tipo": "ALTITUDE_AEROVIA", "aeroviaId": "R1", "altitude": 29000,
-    "inicioSlot": "2026-11-20T08:00:00", "fimSlot": "2026-11-20T09:00:00" },
+    "inicioSlot": "2027-01-15T08:00:00", "fimSlot": "2027-01-15T09:00:00" },
   { "id": 3, "planoId": 1, "tipo": "VAGA_AEROPORTO", "aeroportoCodigo": "CWB", "vaga": 1,
-    "inicioSlot": "2026-11-20T08:00:00", "fimSlot": "2026-11-20T09:00:00" } ]
+    "inicioSlot": "2027-01-15T08:00:00", "fimSlot": "2027-01-15T09:00:00" } ]
 ```
 
 ## Erros

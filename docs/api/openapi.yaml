@@ -1,0 +1,1026 @@
+openapi: 3.0.3
+info:
+  title: Sistema de Gestão de Planos de Voo
+  version: 1.0.0
+  description: 'API REST do trabalho final de Projeto e Arquitetura de Software. Data de referência: 2027-01-15. Datas no
+    formato AAAA-MM-DDTHH:mm:ss, sem fuso, interpretadas em America/Sao_Paulo.'
+servers:
+- url: http://localhost:8080
+paths:
+  /api/aeroportos:
+    get:
+      tags:
+      - Rede aérea
+      summary: UC01 Consultar aeroportos
+      responses:
+        '200':
+          description: Aeroportos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Aeroporto'
+    post:
+      tags:
+      - Rede aérea
+      summary: Cadastrar aeroporto
+      responses:
+        '201':
+          description: Criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aeroporto'
+        '400':
+          description: Dados malformados ou inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '409':
+          description: Operação não permitida na situação atual, identificador repetido ou conflito de reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AeroportoRequest'
+  /api/aerovias:
+    get:
+      tags:
+      - Rede aérea
+      summary: UC02 Consultar aerovias
+      responses:
+        '200':
+          description: Aerovias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Aerovia'
+    post:
+      tags:
+      - Rede aérea
+      summary: Cadastrar aerovia (imutável)
+      responses:
+        '201':
+          description: Criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aerovia'
+        '400':
+          description: Dados malformados ou inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '409':
+          description: Operação não permitida na situação atual, identificador repetido ou conflito de reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AeroviaRequest'
+  /api/pilotos:
+    get:
+      tags:
+      - Frota
+      summary: UC03 Consultar pilotos
+      responses:
+        '200':
+          description: Pilotos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Piloto'
+    post:
+      tags:
+      - Frota
+      summary: Cadastrar piloto
+      responses:
+        '201':
+          description: Criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Piloto'
+        '400':
+          description: Dados malformados ou inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '409':
+          description: Operação não permitida na situação atual, identificador repetido ou conflito de reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PilotoRequest'
+  /api/aeronaves:
+    get:
+      tags:
+      - Frota
+      summary: UC04 Consultar aeronaves
+      responses:
+        '200':
+          description: Aeronaves
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Aeronave'
+    post:
+      tags:
+      - Frota
+      summary: Cadastrar aeronave
+      responses:
+        '201':
+          description: Criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aeronave'
+        '400':
+          description: Dados malformados ou inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '409':
+          description: Operação não permitida na situação atual, identificador repetido ou conflito de reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AeronaveRequest'
+  /api/disponibilidade/aerovias/{aeroviaId}/altitudes:
+    get:
+      tags:
+      - Disponibilidade
+      summary: UC09 Altitudes livres em todos os slots do período (não reserva)
+      responses:
+        '200':
+          description: Altitudes livres
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AltitudesDisponiveis'
+        '400':
+          description: Dados malformados ou inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: aeroviaId
+        in: path
+        required: true
+        schema:
+          type: string
+          example: R1
+      - name: inicio
+        in: query
+        required: true
+        description: Início do período
+        schema:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+      - name: fim
+        in: query
+        required: true
+        description: Fim do período (exclusivo)
+        schema:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+      - name: aeronave
+        in: query
+        required: false
+        description: Prefixo; aplica as regras da categoria
+        schema:
+          type: string
+          example: PR-EXE
+  /api/disponibilidade/aeroportos/{codigo}/vagas:
+    get:
+      tags:
+      - Disponibilidade
+      summary: UC10 Vagas livres em todos os slots do período (não reserva)
+      responses:
+        '200':
+          description: Vagas livres
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VagasDisponiveis'
+        '400':
+          description: Dados malformados ou inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: codigo
+        in: path
+        required: true
+        schema:
+          type: string
+          example: CWB
+      - name: inicio
+        in: query
+        required: true
+        description: Início do período
+        schema:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+      - name: fim
+        in: query
+        required: true
+        description: Fim do período (exclusivo)
+        schema:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+  /api/planos:
+    post:
+      tags:
+      - Planos
+      summary: UC05 Criar plano (nasce EM_EDICAO)
+      responses:
+        '201':
+          description: Criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plano'
+        '400':
+          description: Dados malformados ou inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanoRequest'
+    get:
+      tags:
+      - Planos
+      summary: 'UC14 Listar planos por situação (sem parâmetro: todos)'
+      responses:
+        '200':
+          description: Planos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Plano'
+        '400':
+          description: Dados malformados ou inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: situacao
+        in: query
+        required: false
+        description: Filtro
+        schema:
+          $ref: '#/components/schemas/Situacao'
+  /api/planos/{id}:
+    get:
+      tags:
+      - Planos
+      summary: UC13 Consultar plano
+      responses:
+        '200':
+          description: Plano
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plano'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+    put:
+      tags:
+      - Planos
+      summary: UC06 Editar dados do plano (só EM_EDICAO; trocar a aeronave recalcula as chegadas)
+      responses:
+        '200':
+          description: Plano
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plano'
+        '400':
+          description: Dados malformados ou inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '409':
+          description: Operação não permitida na situação atual, identificador repetido ou conflito de reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanoRequest'
+  /api/planos/{id}/percurso:
+    put:
+      tags:
+      - Planos
+      summary: UC07/UC08 Definir percurso e trechos (só EM_EDICAO; não reserva)
+      responses:
+        '200':
+          description: Plano
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plano'
+        '400':
+          description: Dados malformados ou inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '409':
+          description: Operação não permitida na situação atual, identificador repetido ou conflito de reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PercursoRequest'
+  /api/planos/{id}/validacao:
+    post:
+      tags:
+      - Planos
+      summary: UC11 Validar (não reserva nem muda a situação)
+      responses:
+        '200':
+          description: Resultado da validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Validacao'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '409':
+          description: Operação não permitida na situação atual, identificador repetido ou conflito de reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+  /api/planos/{id}/aprovacao:
+    post:
+      tags:
+      - Planos
+      summary: 'UC12 Aprovar: revalida e reserva tudo ou nada (exige partida futura)'
+      responses:
+        '200':
+          description: Aprovado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plano'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '409':
+          description: Operação não permitida na situação atual, identificador repetido ou conflito de reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '422':
+          description: Plano não passa na validação; detalhes traz os erros. Nenhuma reserva fica e o plano continua EM_EDICAO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+  /api/planos/{id}/reservas:
+    get:
+      tags:
+      - Planos
+      summary: Reservas efetivadas pelo plano
+      responses:
+        '200':
+          description: Reservas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reserva'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+  /api/planos/{id}/abandono:
+    post:
+      tags:
+      - Planos
+      summary: UC15 Abandonar plano em edição
+      responses:
+        '200':
+          description: Abandonado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plano'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '409':
+          description: Operação não permitida na situação atual, identificador repetido ou conflito de reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+  /api/planos/{id}/cancelamento:
+    post:
+      tags:
+      - Planos
+      summary: UC16 Cancelar plano aprovado futuro, liberando as reservas
+      responses:
+        '200':
+          description: Cancelado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plano'
+        '404':
+          description: Recurso inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+        '409':
+          description: Operação não permitida na situação atual, identificador repetido ou conflito de reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+components:
+  schemas:
+    Aeroporto:
+      type: object
+      properties:
+        codigo:
+          type: string
+          example: POA
+        nome:
+          type: string
+        vagas:
+          type: integer
+          example: 41
+    AeroportoRequest:
+      type: object
+      properties:
+        codigo:
+          type: string
+          maxLength: 10
+          example: SSA
+        nome:
+          type: string
+          example: Aeroporto de Salvador
+        vagas:
+          type: integer
+          minimum: 0
+          example: 30
+      required:
+      - codigo
+      - nome
+      - vagas
+    Aerovia:
+      type: object
+      properties:
+        id:
+          type: string
+          example: R1
+        origem:
+          type: string
+          example: POA
+        destino:
+          type: string
+          example: FLN
+        distanciaKm:
+          type: number
+          example: 363
+    AeroviaRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 20
+          example: R9
+        origem:
+          type: string
+          example: POA
+        destino:
+          type: string
+          example: SSA
+        distanciaKm:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          example: 2340
+      required:
+      - id
+      - origem
+      - destino
+      - distanciaKm
+      description: 'Aerovia é imutável: identificador já existente é recusado com 409.'
+    Piloto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 101
+        nome:
+          type: string
+          example: Cmte. Carlos Silva
+    PilotoRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          example: 105
+        nome:
+          type: string
+          example: Cmte. Joana Lima
+      required:
+      - id
+      - nome
+    Categoria:
+      type: string
+      enum:
+      - PARTICULAR
+      - COMERCIAL_PASSAGEIROS
+      - COMERCIAL_CARGA
+    Aeronave:
+      type: object
+      properties:
+        prefixo:
+          type: string
+          example: PT-AZU
+        categoria:
+          $ref: '#/components/schemas/Categoria'
+        velocidadeCruzeiroKmH:
+          type: number
+          example: 850
+        autonomiaNominalKm:
+          type: number
+          example: 4200
+        empresaManutencao:
+          type: string
+          description: só PARTICULAR
+        companhiaAerea:
+          type: string
+          description: só comerciais
+        capacidadeMaximaPassageiros:
+          type: integer
+          description: só COMERCIAL_PASSAGEIROS
+        capacidadeMaximaToneladas:
+          type: number
+          description: só COMERCIAL_CARGA
+    AeronaveRequest:
+      type: object
+      properties:
+        prefixo:
+          type: string
+          example: PR-PAX
+        categoria:
+          $ref: '#/components/schemas/Categoria'
+        velocidadeCruzeiroKmH:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          example: 840
+        autonomiaNominalKm:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          example: 4000
+        empresaManutencao:
+          type: string
+        companhiaAerea:
+          type: string
+          example: LATAM
+        capacidadeMaximaPassageiros:
+          type: integer
+          example: 180
+        capacidadeMaximaToneladas:
+          type: number
+      required:
+      - prefixo
+      - categoria
+      - velocidadeCruzeiroKmH
+      - autonomiaNominalKm
+      description: PARTICULAR exige empresaManutencao; COMERCIAL_PASSAGEIROS exige companhiaAerea e capacidadeMaximaPassageiros;
+        COMERCIAL_CARGA exige companhiaAerea e capacidadeMaximaToneladas. Campos de outra categoria são recusados (400).
+    PlanoRequest:
+      type: object
+      properties:
+        pilotoId:
+          type: integer
+          format: int64
+          example: 103
+        prefixoAeronave:
+          type: string
+          example: PT-AZU
+        origem:
+          type: string
+          example: POA
+        destino:
+          type: string
+          example: CWB
+        partidaPrevista:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+      required:
+      - pilotoId
+      - prefixoAeronave
+      - origem
+      - destino
+      - partidaPrevista
+    TipoPassagem:
+      type: string
+      enum:
+      - SOBREVOO
+      - POUSO
+    TrechoRequest:
+      type: object
+      properties:
+        aeroviaId:
+          type: string
+          example: R1
+        altitude:
+          type: integer
+          example: 30000
+          description: 25.000 a 35.000 pés, de 1.000 em 1.000
+        entradaPrevista:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+        tipoPassagem:
+          $ref: '#/components/schemas/TipoPassagem'
+        permanenciaMinutos:
+          type: integer
+          minimum: 1
+          description: obrigatório em POUSO; proibido em SOBREVOO
+        vagaPretendida:
+          type: integer
+          minimum: 1
+          description: obrigatório em POUSO; proibido em SOBREVOO
+      required:
+      - aeroviaId
+      - altitude
+      - entradaPrevista
+      - tipoPassagem
+      description: 'A chegada não é enviada: o sistema calcula entrada + ceil(distância / velocidade × 3600) segundos.'
+    PercursoRequest:
+      type: object
+      properties:
+        trechos:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrechoRequest'
+      required:
+      - trechos
+      description: Substitui o percurso inteiro (adicionar, remover e reordenar trechos).
+    Trecho:
+      type: object
+      properties:
+        ordem:
+          type: integer
+        aeroviaId:
+          type: string
+        origem:
+          type: string
+        destino:
+          type: string
+        distanciaKm:
+          type: number
+        altitude:
+          type: integer
+        entradaPrevista:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+        chegadaPrevista:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+        duracaoSegundos:
+          type: integer
+          format: int64
+        tipoPassagem:
+          $ref: '#/components/schemas/TipoPassagem'
+        permanenciaMinutos:
+          type: integer
+        vagaPretendida:
+          type: integer
+    Situacao:
+      type: string
+      enum:
+      - EM_EDICAO
+      - APROVADO
+      - CANCELADO
+      - ABANDONADO
+    Plano:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        situacao:
+          $ref: '#/components/schemas/Situacao'
+        pilotoId:
+          type: integer
+          format: int64
+        pilotoNome:
+          type: string
+        prefixoAeronave:
+          type: string
+        categoriaAeronave:
+          $ref: '#/components/schemas/Categoria'
+        origem:
+          type: string
+        destino:
+          type: string
+        partidaPrevista:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+        chegadaPrevistaDestino:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+        trechos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trecho'
+    Validacao:
+      type: object
+      properties:
+        planoId:
+          type: integer
+          format: int64
+        valido:
+          type: boolean
+        erros:
+          type: array
+          items:
+            type: string
+    Reserva:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        planoId:
+          type: integer
+          format: int64
+        tipo:
+          type: string
+          enum:
+          - ALTITUDE_AEROVIA
+          - VAGA_AEROPORTO
+        aeroviaId:
+          type: string
+        altitude:
+          type: integer
+        aeroportoCodigo:
+          type: string
+        vaga:
+          type: integer
+        inicioSlot:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+        fimSlot:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+    AltitudesDisponiveis:
+      type: object
+      properties:
+        aeroviaId:
+          type: string
+        inicio:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+        fim:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+        prefixoAeronave:
+          type: string
+        altitudesDisponiveis:
+          type: array
+          items:
+            type: integer
+    VagasDisponiveis:
+      type: object
+      properties:
+        aeroportoCodigo:
+          type: string
+        inicio:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+        fim:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$
+          example: '2027-01-15T08:00:00'
+          description: AAAA-MM-DDTHH:mm:ss, sem fuso (America/Sao_Paulo)
+        quantidadeDisponivel:
+          type: integer
+        vagasDisponiveis:
+          type: array
+          items:
+            type: integer
+    Erro:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 409
+        erro:
+          type: string
+          example: Conflict
+        mensagem:
+          type: string
+        detalhes:
+          type: array
+          items:
+            type: string

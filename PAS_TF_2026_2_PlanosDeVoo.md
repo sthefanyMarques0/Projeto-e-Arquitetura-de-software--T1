@@ -88,9 +88,7 @@ Por serem orientadas, as aerovias que ligam dois aeroportos em sentidos
 opostos são consideradas aerovias distintas.
 
 Para este trabalho, considere inicialmente a rede aérea apresentada na
-figura a seguir.
-
-![Rede aérea inicial](docs/rede-aerea.png)
+tabela a seguir.
 
   Aerovia   Origem   Destino     Distância (km)
   --------- -------- --------- ----------------
@@ -111,10 +109,9 @@ possível incorporá-los ao sistema sem alterações na lógica da aplicação.
 O sistema deverá permitir consultar os aeroportos e aerovias cadastrados
 e cadastrar novos aeroportos e aerovias.
 
-**Regra adicional de domínio — imutabilidade das aerovias:** após o
-cadastro, uma aerovia não poderá ser alterada ou excluída. Somente novas
-aerovias poderão ser criadas, com identificadores únicos que não
-substituam os registros existentes. Isso preserva os dados das aerovias
+ATENÇÃO: após o cadastro, uma aerovia não poderá ser alterada ou excluída. 
+Somente novas aerovias poderão ser criadas, com identificadores únicos que 
+não substituam os registros existentes. Isso preserva os dados das aerovias
 referenciadas pelos planos e pelas reservas. Uma aerovia que entrar em
 desuso permanecerá cadastrada e apenas deixará de ser solicitada pelos
 usuários; a gestão desse desuso está fora do escopo do sistema.
@@ -232,23 +229,6 @@ permanência, em minutos. Isso também se aplica ao **destino final**.
 
 Indicar uma vaga durante a elaboração **não constitui reserva**.
 
-### 4.4 Convenções temporais adicionais acordadas
-
-- O fuso operacional será **America/Sao_Paulo**, usado para a data do voo,
-  a janela de operação de carga e a comparação com a hora atual.
-- A API usará o formato **AAAA-MM-DDTHH:mm:ss**, sem offset e sem frações
-  de segundo, interpretado nesse fuso independentemente do fuso do servidor.
-- A duração de cada trecho será calculada em segundos por
-  **ceil(distância em km / velocidade em km/h × 3600)**, arredondando
-  qualquer fração para cima. O mesmo resultado será usado na chegada,
-  na continuidade dos horários e na determinação dos períodos de reserva.
-- Períodos de utilização e slots seguem **[início, fim)**: início incluído,
-  fim excluído. Terminar exatamente na hora cheia não ocupa o próximo slot.
-  Um voo de carga pode terminar exatamente às **06:00**, mas não iniciar
-  nesse horário; seu período inteiro deve estar contido em [00:00, 06:00).
-- A permanência em todo pouso, inclusive no destino final, deve ser um
-  número inteiro de minutos **maior ou igual a 1**.
-
 ------------------------------------------------------------------------
 
 ## 5. Controle de ocupação de aerovias e aeroportos
@@ -323,19 +303,6 @@ enunciado.
 
 ### 6.1 Criação e edição
 
-**Regra adicional acordada — propriedade do plano:** o sistema registra
-o usuário criador a partir da autenticação. Essa identificação é imutável
-e distinta da identificação do piloto. Somente o criador pode editar,
-aprovar, abandonar ou cancelar seu plano, respeitando estado e horário.
-Qualquer usuário autenticado pode consultar e listar planos de outros
-criadores, em todas as situações, e consultar suas reservas. A validação
-também é permitida a outros usuários autenticados, por não alterar dados
-ou reservas, desde que o plano esteja em edição.
-Por simplificação didática, não haverá versionamento exposto na API nem
-detecção de edições desatualizadas entre abas do próprio usuário, que assume
-o risco de sobrescrita. Permanecem obrigatórias a consistência das mudanças
-de estado, a atomicidade das operações e a prevenção de reservas conflitantes.
-
 Todo plano recebe identificador único e nasce **em edição**. Enquanto
 estiver em edição poderá ter percurso, altitudes, pousos, sobrevoos e
 permanências alterados. Alterações não reservam recursos.
@@ -394,11 +361,6 @@ garantir que continuem válidas no momento das reservas.
 
 Um plano somente será aprovado se **todas as regras forem satisfeitas e
 todos os recursos puderem ser reservados**.
-
-**Regra adicional acordada:** a aprovação exige partida estritamente futura
-no momento da operação. Rascunhos com partida passada podem ser criados,
-editados e validados, mas não aprovados pela API. Planos históricos usados
-na demonstração serão carregados pelos scripts de inicialização.
 
 A aprovação será integral: ou todas as reservas são efetivadas e o plano
 passa a **aprovado**, ou nenhuma reserva da tentativa permanece e o

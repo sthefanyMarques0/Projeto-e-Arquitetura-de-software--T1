@@ -36,7 +36,7 @@ Container_Boundary(api, "API de Planos de Voo") {
   Boundary(saida, "adapter.out (adaptadores de saída)") {
     Component(jpa, "Adaptadores JPA", "Consulta*JpaAdapter, PlanoDeVooJpaAdapter, ReservaJpaAdapter", "Implementam as portas; entidades JPA e mapeadores separados do domínio")
     Component(relogio, "RelogioDoSistemaAdapter", "java.time", "Agora em America/Sao_Paulo (fixável por propriedade)")
-    Component(flyway, "Migrações Flyway", "db/migration V1–V4", "Esquema, malha, frota, planos aprovados e reservas da data de referência")
+    Component(flyway, "Migrações Flyway", "db/migration V1–V5", "Esquema, malha, frota, planos aprovados e reservas da data de referência")
   }
 
   Component(config, "ServicosDeDominioConfig", "@Configuration", "Registra os serviços de domínio como beans")

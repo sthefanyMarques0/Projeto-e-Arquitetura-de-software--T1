@@ -2,11 +2,13 @@
 
 Backend REST em **Java 25 + Spring Boot 4.1** com **arquitetura hexagonal** (portas e adaptadores), organizado como o exemplo `ex7` da disciplina.
 
-> **Data de referência: `2026-11-20`** — usada nas demonstrações de validação, disponibilidade, reserva e conflito.
+> **Data de referência: `2027-01-15`** — usada nas demonstrações de validação, disponibilidade, reserva e conflito.
+> Ela fica no futuro durante todo o semestre, então aprovação e cancelamento funcionam com o relógio real.
 
 ## Pré-requisitos
 
-- Java 25 (JDK). Não é preciso instalar Maven nem banco: o projeto traz o Maven Wrapper e usa H2 embutido.
+- Java 25 (JDK), com `JAVA_HOME` apontando para ele (`java -version` deve mostrar 25).
+- Não é preciso instalar Maven nem banco: o projeto traz o Maven Wrapper e usa H2 embutido. Na primeira execução o wrapper baixa o Maven e as dependências (precisa de internet).
 
 ## Executar
 
@@ -28,12 +30,20 @@ A API sobe em `http://localhost:8080`. Ao iniciar pela primeira vez, o **Flyway*
 ./mvnw clean test
 ```
 
-Os testes de domínio rodam sem Spring nem banco. O teste de integração sobe a aplicação com H2 em memória, as mesmas migrações e o relógio fixo em `2026-11-19T12:00:00`.
+| Testes | O que verificam |
+|---|---|
+| `domain/*Test` | Regras do domínio sem Spring nem banco: duração, slots, categorias, autonomia, percurso, horários, estados do plano |
+| `PlanosDeVooIntegracaoTest` | Carga inicial, validar sem reservar, aprovar e cancelar, conflito, voo executado, disponibilidade no momento da aprovação, aprovação sem reservas parciais |
+| `CadastrosIntegracaoTest` | Cadastro de aeroportos, aerovias (imutáveis), pilotos e aeronaves de cada categoria |
+| `RoteiroDemonstracaoTest` | O roteiro da apresentação (coleção Postman): cada falha de validação aparece como esperado na data de referência |
+
+Os testes de integração sobem a aplicação com H2 em memória, as mesmas migrações (V1–V5) e o relógio fixo em `2027-01-14T12:00:00`.
 
 ## Acessar a API
 
-- Operações, parâmetros, requisições e respostas: [`docs/api/endpoints.md`](docs/api/endpoints.md)
-- Roteiro da apresentação no Postman: importe [`docs/api/planos-de-voo.postman_collection.json`](docs/api/planos-de-voo.postman_collection.json) e rode as pastas na ordem.
+- **Especificação OpenAPI 3:** [`docs/api/openapi.yaml`](docs/api/openapi.yaml). Para navegar e testar, abra em [editor.swagger.io](https://editor.swagger.io) (File → Import file) ou importe no Postman.
+- Guia das operações com exemplos: [`docs/api/endpoints.md`](docs/api/endpoints.md)
+- Roteiro da apresentação no Postman: importe [`docs/api/planos-de-voo.postman_collection.json`](docs/api/planos-de-voo.postman_collection.json) e rode as pastas na ordem (1 a 8).
 
 ```bash
 curl http://localhost:8080/api/aerovias
@@ -47,9 +57,10 @@ curl -X POST http://localhost:8080/api/planos/7/validacao
 | `V1__criar_esquema.sql` | Tabelas, restrições e unicidade das reservas por slot |
 | `V2__carregar_rede_aerea.sql` | POA, FLN, CWB, GRU e aerovias R1–R8 |
 | `V3__carregar_pilotos_e_aeronaves.sql` | 4 pilotos; aeronaves das 3 categorias (PT-ECO com pouca autonomia, para demonstração) |
-| `V4__carregar_planos_e_reservas.sql` | Planos e reservas na data de referência |
+| `V4__carregar_planos_e_reservas.sql` | Planos e reservas (gerados com as regras do domínio) |
+| `V5__mover_data_de_referencia.sql` | Move a data de referência de 2026-11-20 para 2027-01-15 |
 
-**Ocupação em 2026-11-20:** aerovias **R1, R3, R4, R5 e R6** (5 de 8 = 62,5%). R2, R7 e R8 estão livres, assim como as demais altitudes e horários.
+**Ocupação em 2027-01-15:** aerovias **R1, R3, R4, R5 e R6** (5 de 8 = 62,5%). R2, R7 e R8 estão livres, assim como as demais altitudes e horários.
 
 | Plano | Situação | Percurso | Uso na demonstração |
 |---|---|---|---|
@@ -70,7 +81,7 @@ Aeroportos, aerovias, pilotos e aeronaves vêm da carga inicial e também podem 
 A hora atual é obtida no fuso **America/Sao_Paulo**, independentemente do fuso do servidor. Para demonstrar situações dependentes do horário, é possível fixar o "agora" em `src/main/resources/application.properties`:
 
 ```properties
-planos.relogio.agora=2026-11-20T09:00:00
+planos.relogio.agora=2027-01-15T09:00:00
 ```
 
 Com esse valor, por exemplo, o plano 1 (partida às 08:00) passa a ser um voo executado e não pode ser cancelado.
