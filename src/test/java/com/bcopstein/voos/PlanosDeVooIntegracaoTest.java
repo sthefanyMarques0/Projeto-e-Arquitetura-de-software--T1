@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.bcopstein.voos.application.exception.ConflitoDeReservaException;
 import com.bcopstein.voos.application.exception.PlanoInvalidoException;
 import com.bcopstein.voos.application.port.in.AprovarPlano;
 import com.bcopstein.voos.application.port.in.CancelarPlano;
@@ -17,15 +18,18 @@ import com.bcopstein.voos.application.port.in.DadosPlanoCommand;
 import com.bcopstein.voos.application.port.in.DefinirPercurso;
 import com.bcopstein.voos.application.port.in.TrechoCommand;
 import com.bcopstein.voos.application.port.in.ValidarPlano;
+import com.bcopstein.voos.application.port.out.ReservaPort;
 import com.bcopstein.voos.domain.exception.OperacaoNaoPermitidaException;
 import com.bcopstein.voos.domain.model.plano.PlanoDeVoo;
 import com.bcopstein.voos.domain.model.plano.SituacaoPlano;
 import com.bcopstein.voos.domain.model.plano.TipoPassagem;
+import com.bcopstein.voos.domain.model.reserva.Reserva;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -46,6 +50,7 @@ class PlanosDeVooIntegracaoTest {
     @Autowired AprovarPlano aprovarPlano;
     @Autowired CancelarPlano cancelarPlano;
     @Autowired ConsultarDisponibilidade consultarDisponibilidade;
+    @Autowired ReservaPort reservas;
 
     @Test
     void cargaInicialDisponivel() {
@@ -138,5 +143,17 @@ class PlanosDeVooIntegracaoTest {
         assertEquals(0, consultarPlanos.reservasDoPlano(plano.getId()).size());
         // a altitude do 1º trecho, que estava livre, continua livre
         assertTrue(consultarDisponibilidade.altitudesDisponiveis("R1", partida, partida.plusHours(1), null).contains(31_000));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void bancoRecusaReservaDuplicadaEAdaptadorTraduzConflito() {
+        Reserva existente = reservas.buscarDoPlano(1L).get(0);
+        Reserva duplicada = new Reserva(null, 7L, existente.getTipo(), existente.getAeroviaId(),
+                existente.getAltitude(), existente.getAeroportoCodigo(), existente.getVaga(), existente.getSlot());
+
+        assertThrows(ConflitoDeReservaException.class, () -> reservas.registrar(List.of(duplicada)));
+        assertEquals(4, reservas.buscarDoPlano(1L).size());
+        assertTrue(reservas.buscarDoPlano(7L).isEmpty());
     }
 }

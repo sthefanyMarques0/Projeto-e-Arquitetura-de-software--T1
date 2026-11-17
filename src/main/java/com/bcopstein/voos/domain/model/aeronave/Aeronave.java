@@ -47,7 +47,7 @@ public abstract class Aeronave {
         return autonomiaNominalKm.multiply(FATOR_AUTONOMIA_SEGURA);
     }
 
-    /** Duração = ceil(distância / velocidade × 3600) segundos (seção 4.4 do enunciado). */
+    /** Duração = ceil(distância / velocidade × 3600) segundos (seção 4.1 do enunciado). */
     public Duration tempoDeVoo(BigDecimal distanciaKm) {
         BigDecimal segundos = distanciaKm.multiply(SEGUNDOS_POR_HORA)
                 .divide(velocidadeCruzeiroKmH, 0, RoundingMode.CEILING);
