@@ -1,9 +1,12 @@
 package com.bcopstein.voos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.bcopstein.voos.adapter.out.persistence.entity.AprovacaoOutboxEntity;
+import com.bcopstein.voos.adapter.out.persistence.repository.AprovacaoOutboxJpaRepository;
 import com.bcopstein.voos.application.exception.PlanoInvalidoException;
 import com.bcopstein.voos.application.port.in.AprovarPlano;
 import com.bcopstein.voos.application.port.in.CancelarPlano;
@@ -21,6 +24,7 @@ import com.bcopstein.voos.domain.exception.OperacaoNaoPermitidaException;
 import com.bcopstein.voos.domain.model.plano.PlanoDeVoo;
 import com.bcopstein.voos.domain.model.plano.SituacaoPlano;
 import com.bcopstein.voos.domain.model.plano.TipoPassagem;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -29,7 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Sobe a aplicação com H2 em memória e as migrações do Flyway (mesma carga inicial da entrega).
+ * Sobe a aplicação com H2 em memória e as migrações Flyway V1–V6 (V7 é verificada separadamente).
  * Cada teste roda numa transação desfeita ao final, mantendo os dados iniciais intactos.
  * O relógio está fixo em 2027-01-14T12:00 (ver src/test/resources/application.properties).
  */
@@ -46,6 +50,8 @@ class PlanosDeVooIntegracaoTest {
     @Autowired AprovarPlano aprovarPlano;
     @Autowired CancelarPlano cancelarPlano;
     @Autowired ConsultarDisponibilidade consultarDisponibilidade;
+    @Autowired AprovacaoOutboxJpaRepository outbox;
+    @Autowired ObjectMapper objectMapper;
 
     @Test
     void cargaInicialDisponivel() {
@@ -64,11 +70,17 @@ class PlanosDeVooIntegracaoTest {
     }
 
     @Test
-    void aprovacaoReservaECancelamentoLibera() {
+    void aprovacaoReservaECancelamentoLibera() throws Exception {
         PlanoDeVoo aprovado = aprovarPlano.aprovar(7L);
         assertEquals(SituacaoPlano.APROVADO, aprovado.getSituacao());
         // R7 16:00–16:25:25 (slot 16) + vaga 10 de CWB 16:25:25–16:55:25 (slot 16)
         assertEquals(2, consultarPlanos.reservasDoPlano(7L).size());
+        List<AprovacaoOutboxEntity> eventos = outbox.findAll().stream()
+                .filter(evento -> evento.getPlanoId().equals(7L)).toList();
+        assertEquals(1, eventos.size());
+        assertEquals(aprovado.getCriadoPor(), objectMapper.readTree(eventos.getFirst().getPayload())
+                .get("criadoPor").asText());
+        assertNull(eventos.getFirst().getPublicadoEm());
 
         PlanoDeVoo cancelado = cancelarPlano.cancelar(7L);
         assertEquals(SituacaoPlano.CANCELADO, cancelado.getSituacao());
@@ -81,6 +93,7 @@ class PlanosDeVooIntegracaoTest {
         assertTrue(erro.getErros().stream().anyMatch(e -> e.contains("R1")), erro.getErros().toString());
         assertEquals(SituacaoPlano.EM_EDICAO, consultarPlanos.porId(6L).getSituacao());
         assertEquals(0, consultarPlanos.reservasDoPlano(6L).size());
+        assertTrue(outbox.findAll().stream().noneMatch(evento -> evento.getPlanoId().equals(6L)));
     }
 
     @Test
