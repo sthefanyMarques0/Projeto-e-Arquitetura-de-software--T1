@@ -1,0 +1,83 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  eureka-server:
+    build:
+      context: services/eureka-server
+    ports:
+      - "8761:8761"
+
+  cadastro-rede:
+    build:
+      context: services/cadastro-rede
+    environment:
+      SERVER_PORT: 8082
+      EUREKA_URL: http://eureka-server:8761/eureka/
+    ports:
+      - "8082:8082"
+    volumes:
+      - cadastro-data:/app/data
+    depends_on:
+      - eureka-server
+
+  registro-aprovacoes:
+    build:
+      context: services/registro-aprovacoes
+    environment:
+      SERVER_PORT: 8083
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      RABBITMQ_HOST: rabbitmq
+    ports:
+      - "8083:8083"
+    volumes:
+      - registro-data:/app/data
+    depends_on:
+      - eureka-server
+      - rabbitmq
+
+  planos-de-voo:
+    build:
+      context: .
+    environment:
+      SERVER_PORT: 8081
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      RABBITMQ_HOST: rabbitmq
+    ports:
+      - "8081:8081"
+    volumes:
+      - planos-data:/app/data
+    depends_on:
+      - eureka-server
+      - cadastro-rede
+      - rabbitmq
+
+  api-gateway:
+    build:
+      context: services/api-gateway
+    environment:
+      SERVER_PORT: 8080
+      EUREKA_URL: http://eureka-server:8761/eureka/
+    ports:
+      - "8090:8080"
+    depends_on:
+      - eureka-server
+      - cadastro-rede
+      - planos-de-voo
+      - registro-aprovacoes
+
+volumes:
+  rabbitmq-data:
+  cadastro-data:
+  registro-data:
+  planos-data:
